@@ -1,0 +1,22 @@
+.selection-container {
+  padding: 24px;
+  max-width: 700px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+}

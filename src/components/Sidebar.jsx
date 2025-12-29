@@ -1,33 +1,95 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { validateMenuForUser } from '../Services/SideMenuApi';
+import { resolvePath } from '../routeMap';
 import { FaHome, FaPlus, FaList, FaUpload, FaChartBar } from 'react-icons/fa'
 
-export default function Sidebar({ menus = {}, onSelect }) {
+export default function Sidebar({ menus = {}, onSelect, userCode }) {
   const loc = useLocation()
+  const navigate = useNavigate()
 
-  function resolvePath(id){
-    switch(id){
-      case 'dashboard': return '/dashboard'
-      case 'new': return '/new'
-      case 'view': return '/view'
-      case 'bulk': return '/bulk'
-      case 'reports': return '/reports'
-      default: return '/' 
+  // use central routeMap resolvePath
+
+  // When on the root path (several variants), render minimal sidebar (brand only)
+  const path = loc.pathname || ''
+  function goHome(){
+    navigate('/')
+  }
+
+  function onBrandKey(e){
+    if(e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar'){
+      e.preventDefault()
+      goHome()
+    }
+  }
+
+ if (
+  (path === '/' || path === '' || path.endsWith('/index.html')) &&
+  (!menus?.main || menus.main.length === 0)
+) {
+  return (
+    <aside className="sidebar">
+      <div
+        className="brand"
+        role="button"
+        tabIndex={0}
+        onClick={goHome}
+        onKeyDown={onBrandKey}
+      >
+        SOBHA constructions
+      </div>
+    </aside>
+  )
+}
+
+  async function handleClick(m){
+    const to = m.url || resolvePath(m.id)
+    const ok = await validateMenuForUser(userCode, m.id)
+    const state = { menuLabel: m.label }
+    if(userCode) state.user = userCode
+    if(typeof m === 'object' && m.label) state.menuLabel = m.label
+    if(typeof m !== 'undefined' && typeof m.id !== 'undefined') state.menuId = m.id
+    if(ok){
+      navigate(to, { state })
+    } else {
+      navigate('/404')
+    }
+  }
+
+  function handleKeyDown(e, m){
+    // activate on Enter or Spaceo
+    
+    if(e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar'){
+      e.preventDefault()
+      handleClick(m)
     }
   }
 
   return (
     <aside className="sidebar">
-      <div className="brand">SOBHA constructions</div>
+      <div className="brand" role="button" tabIndex={0} onClick={goHome} onKeyDown={onBrandKey}>SOBHA constructions</div>
       <nav>
+        {/* default landing menu */}
+        <div className={`nav-item ${loc.pathname === '/' ? 'active' : ''}`} role="button" tabIndex={0} onClick={() => navigate('/')} onKeyDown={(e)=>{ if(e.key==='Enter'||e.key===' '||e.key==='Spacebar'){ e.preventDefault(); navigate('/') } }}>
+          <span className="icon">{getIconComponent('home')}</span>
+          <span className="label">Home</span>
+        </div>
         {menus.main && menus.main.map((m) => {
-          const to = resolvePath(m.id)
+          const to = m.url || resolvePath(m.id)
           const active = loc.pathname === to
           return (
-            <Link key={m.id} to={to} className={`nav-item ${active ? 'active' : ''}`}>
+            <div
+              key={m.id}
+              onClick={() => handleClick(m)}
+              onKeyDown={(e) => handleKeyDown(e, m)}
+              role="button"
+              tabIndex={0}
+              aria-current={active ? 'page' : undefined}
+              className={`nav-item ${active ? 'active' : ''}`}
+            >
               <span className="icon">{getIconComponent(m.icon)}</span>
-              <span className="label">{m.label}</span>
-            </Link>
+              <span className="label">{m.title}</span>
+            </div>
           )
         })}
       </nav>
@@ -35,9 +97,16 @@ export default function Sidebar({ menus = {}, onSelect }) {
       <div className="quick">QUICK ACTIONS</div>
       <nav>
         {menus.quick && menus.quick.map((m) => (
-          <div key={m.id} className="nav-item small">
+          <div
+            key={m.id}
+            className="nav-item small"
+            onClick={() => handleClick(m)}
+            onKeyDown={(e) => handleKeyDown(e, m)}
+            role="button"
+            tabIndex={0}
+          >
             <span className="icon">{getIconComponent(m.icon)}</span>
-            <span className="label">{m.label}</span>
+           <span className="label">{m.title}</span>
           </div>
         ))}
       </nav>
