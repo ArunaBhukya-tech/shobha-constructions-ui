@@ -50,3 +50,7 @@ th{background:transparent;color:#374151}
   .reports-page .charts{grid-template-columns:repeat(1,1fr)}
   .metrics-grid{grid-template-columns:repeat(2,1fr)}
 }
+
+/* small spinner used in buttons */
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid #e6e9ef;border-top-color:#1f4ed8;border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}

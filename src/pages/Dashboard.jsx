@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { fetchTablePreview } from '../Services/api'
-import { fetchProjects } from '../Services/ProjectsApi'
-import { fetchMetrics } from '../Services/Metrics'
+import { fetchProjects, fetchMetrics, fetchTablePreview } from '../api'
 import ProjectCard from '../components/ProjectCard'
 import MetricCard from '../components/MetricCard'
 import ProgressCard from '../components/ProgressCard'
@@ -14,19 +12,17 @@ export default function Dashboard(){
   const [rows, setRows] = useState([])
   const [role, setRole] = useState('')
   const [userLabel, setUserLabel] = useState('')
-useEffect(() => {
-  fetchProjects()
-    .then(res => setProjects(res.data))
-    .catch(() => setProjects([]));
+  const [selectedProjectId, setSelectedProjectId] = useState('')
 
-  fetchMetrics()
-    .then(res => setMetrics(res.data)) // ✅ important: use res.data
-    .catch(() => setMetrics([]));
-
-  fetchTablePreview()
-    .then(res => setRows(res.data)) // also use res.data if Axios
-    .catch(() => setRows([]));
-}, []);
+  useEffect(()=>{
+    fetchProjects().then(setProjects)
+    fetchMetrics().then(setMetrics)
+    // select first project by id for table preview
+    fetchProjects().then(ps => {
+      const id = ps?.[0]?.id
+      if(id) setSelectedProjectId(id)
+    }).catch(()=>{})
+  },[])
 
   const location = useLocation()
   useEffect(()=>{
@@ -38,26 +34,17 @@ useEffect(() => {
   return (
     <div>
       <section className="projects">
-      {projects.map(p => (
-  <option key={p.id} value={p.name}>
-    {p.name}
-  </option>
-))}
+        {projects.map(p=> <ProjectCard key={p.id} project={p} />)}
       </section>
 
       <section className="metrics area">
         <div className="metrics-grid">
-          {metrics.map(m => (
-  <div key={m.id} className="metric-card" style={{ borderColor: m.color }}>
-    <div className="metric-label">{m.label}</div>
-    <div className="metric-value">{m.value}</div>
-  </div>
-))}
+          {metrics.slice(0,9).map(m => <MetricCard key={m.id} item={m} />)}
           <ProgressCard percent={78} />
         </div>
       </section>
 
-      <TablePreview rows={rows} />
+      <TablePreview projectId={selectedProjectId} />
     </div>
   )
 }

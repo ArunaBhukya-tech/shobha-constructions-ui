@@ -7,7 +7,7 @@ export default function ComingSoon(){
 
   return (
     <div style={{padding:24}}>
-      <h2>{menuLabel ? `${menuLabel} ï¿½ Coming soon` : 'Coming soon'}</h2>
+      <h2>{menuLabel ? `${menuLabel} — Coming soon` : 'Coming soon'}</h2>
       <p>This feature is not implemented yet. We are working on it.</p>
     </div>
   )

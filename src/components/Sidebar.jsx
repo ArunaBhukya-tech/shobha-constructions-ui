@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { validateMenuForUser } from '../Services/SideMenuApi';
-import { resolvePath } from '../routeMap';
+import { validateMenuForUser } from '../api'
+import { resolvePath } from '../routeMap'
 import { FaHome, FaPlus, FaList, FaUpload, FaChartBar } from 'react-icons/fa'
 
 export default function Sidebar({ menus = {}, onSelect, userCode }) {
@@ -23,24 +23,13 @@ export default function Sidebar({ menus = {}, onSelect, userCode }) {
     }
   }
 
- if (
-  (path === '/' || path === '' || path.endsWith('/index.html')) &&
-  (!menus?.main || menus.main.length === 0)
-) {
-  return (
-    <aside className="sidebar">
-      <div
-        className="brand"
-        role="button"
-        tabIndex={0}
-        onClick={goHome}
-        onKeyDown={onBrandKey}
-      >
-        SOBHA constructions
-      </div>
-    </aside>
-  )
-}
+  if(path === '/' || path === '' || path.endsWith('/index.html')){
+    return (
+      <aside className="sidebar">
+        <div className="brand" role="button" tabIndex={0} onClick={goHome} onKeyDown={onBrandKey}>SOBHA constructions</div>
+      </aside>
+    )
+  }
 
   async function handleClick(m){
     const to = m.url || resolvePath(m.id)
@@ -57,8 +46,7 @@ export default function Sidebar({ menus = {}, onSelect, userCode }) {
   }
 
   function handleKeyDown(e, m){
-    // activate on Enter or Spaceo
-    
+    // activate on Enter or Space
     if(e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar'){
       e.preventDefault()
       handleClick(m)
@@ -88,7 +76,7 @@ export default function Sidebar({ menus = {}, onSelect, userCode }) {
               className={`nav-item ${active ? 'active' : ''}`}
             >
               <span className="icon">{getIconComponent(m.icon)}</span>
-              <span className="label">{m.title}</span>
+              <span className="label">{m.label}</span>
             </div>
           )
         })}
@@ -106,7 +94,7 @@ export default function Sidebar({ menus = {}, onSelect, userCode }) {
             tabIndex={0}
           >
             <span className="icon">{getIconComponent(m.icon)}</span>
-           <span className="label">{m.title}</span>
+            <span className="label">{m.label}</span>
           </div>
         ))}
       </nav>

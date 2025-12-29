@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
-import { fetchMenusByUser } from "./Services/SideMenuApi";
-import { fetchMetrics } from "./Services/Metrics";
-import { fetchProjects } from "./Services/ProjectsApi";
-import { fetchTablePreview } from "./Services/api";
+import {
+  fetchProjects,
+  fetchMetrics,
+  fetchTablePreview,
+  fetchMenusByUser,
+} from "./api";
 import Reports from "./pages/Reports";
 import DefaultDropdown from "./pages/DefaultDropdown";
 import Dashboard from "./pages/Dashboard";
@@ -24,10 +26,8 @@ export default function App() {
   
 
   useEffect(() => {
-    // do not load global menus by default; menus will be loaded per-user
-    fetchProjects().then((p)=>{ setProjects(p); setSelectedProject(p[0]?.name || '') })
-    fetchMetrics().then(setMetrics);
-    fetchTablePreview().then(setRows);
+    // do not load global projects/metrics/rows here; pages fetch what they need
+    // menus will be loaded per-user
   }, []);
 
   // role handling moved to backend; no UI role selection anymore

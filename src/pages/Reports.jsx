@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { fetchProjects } from '../Services/ProjectsApi';
-import { fetchMetrics } from '../Services/Metrics';
+import { fetchProjects, fetchMetrics } from '../api'
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'recharts'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
@@ -25,7 +24,6 @@ export default function Reports(){
   ]
 
   const barDataProjects = projects.map((p, idx)=>({ name: p.name, value: (idx+1)*100 }))
-  console.log(barDataProjects)
   const activitiesData = [
     { name: 'Gypsum Celling', value: 350 },
     { name: 'Final Coat Paint', value: 240 },
